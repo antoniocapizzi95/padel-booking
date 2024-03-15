@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { BookingModule } from './booking/booking.module';
 import { SlotModule } from './slot/slot.module';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -11,7 +12,8 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
     }), 
     BookingModule,
-    SlotModule
+    SlotModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

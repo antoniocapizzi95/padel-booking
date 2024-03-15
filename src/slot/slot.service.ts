@@ -3,7 +3,6 @@ import { Slot } from '../models/slot.model';
 import { BookingRepository } from '../repositories/mocks/booking.repository';
 import { AvailableSlotsResponse } from '../models/available-slots.response.model';
 import { isValidDate } from '../utils/isValidDate';
-import { ResponseError } from '../models/response-error.model';
 
 @Injectable()
 export class SlotService {

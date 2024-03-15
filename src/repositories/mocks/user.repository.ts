@@ -34,4 +34,8 @@ export class UserRepository implements IUserRepository {
     async findById(id: number): Promise<User> {
         return this.users.find(user => user.id === id);
     }
+
+    async findByUsername(username: string): Promise<User> {
+        return this.users.find(user => user.username === username);
+    }
 }

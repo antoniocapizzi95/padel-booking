@@ -10,7 +10,9 @@ import { INotificationService } from '../notification/notification.service.inter
 import { ResponseError } from 'src/models/response-error.model';
 import { getFormattedDate } from '../utils/getFormattedDate';
 import { convertHourFormat } from '../utils/convertHourFormat';
+import { BookingResponse } from '../models/booking-response.model';
 
+const MAX_PLAYERS_PER_SLOT = 4
 @Injectable()
 export class BookingService {
 
@@ -24,47 +26,43 @@ export class BookingService {
       this.notificationService = this.notificationServiceFactory.createNotificationService('email');
      }
   
-  async book(bookingReq: BookingRequest): Promise<Booking | ResponseError> {
+  async book(bookingReq: BookingRequest, user: User): Promise<BookingResponse | ResponseError> {
     try {
       if (typeof bookingReq.slot.date === 'string') {
         bookingReq.slot.date = new Date(bookingReq.slot.date);
       }
       const booking = await this.bookingRepository.getBookingByDateAndHour(bookingReq.slot.date, bookingReq.slot.hour);
-      await this.validateBookingReq(bookingReq, booking);
+      await this.validateBookingReq(bookingReq, booking, user);
       if (booking) {
-          booking.users.push(bookingReq.userId);
-          if (booking.users.length === 4) {
+          booking.users.push(user.id);
+          const players = booking.users.length;
+          if (players === MAX_PLAYERS_PER_SLOT) {
               booking.confirmed = true;
               this.sendNotification(booking);
           }
           await this.bookingRepository.updateBooking(booking.id, booking);
-          return booking
+          return { id: booking.id, slot: booking.slot, confirmed: booking.confirmed, missingPlayersToConfirm: MAX_PLAYERS_PER_SLOT - players};
       }
   
       const newBooking = await this.bookingRepository.createBooking({
           slot: bookingReq.slot,
           confirmed: false,
-          users: [bookingReq.userId]
+          users: [user.id]
       })
   
-      return newBooking;
+      return { id: newBooking.id, slot: newBooking.slot, confirmed: newBooking.confirmed, missingPlayersToConfirm: MAX_PLAYERS_PER_SLOT - newBooking.users.length };
     } catch(error) {
       return { errorMessage: error.message }
     }
   }
 
-  private async validateBookingReq(bookingReq: BookingRequest, booking: Booking) {
+  private async validateBookingReq(bookingReq: BookingRequest, booking: Booking, user: User) {
     if (bookingReq.slot.hour < 9 || bookingReq.slot.hour > 23) {
         throw new Error('You are booking out of hours');
     }
 
     if (!isValidDate(bookingReq.slot.date)) {
       throw new Error(`No availability for this date: ${bookingReq.slot}`)
-    }
-
-    const user: User = await this.userRepository.findById(bookingReq.userId);
-    if (!user) {
-        throw new Error('User not found');
     }
 
     if (booking && booking.confirmed) {
