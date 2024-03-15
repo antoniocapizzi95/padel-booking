@@ -5,34 +5,52 @@ import { BookingRequest } from '../models/booking-request.model';
 import { UserRepository } from '../repositories/mocks/user.repository';
 import { User } from '../models/user.model';
 import { isValidDate } from '../utils/isValidDate';
+import { NotificationServiceFactory } from '../notification/notification.service.factory';
+import { INotificationService } from '../notification/notification.service.interface';
+import { ResponseError } from 'src/models/response-error.model';
+import { getFormattedDate } from '../utils/getFormattedDate';
+import { convertHourFormat } from '../utils/convertHourFormat';
 
 @Injectable()
 export class BookingService {
-  constructor(private readonly bookingRepository: BookingRepository, private readonly userRepository: UserRepository) {}
+
+  private readonly notificationService: INotificationService
+
+  constructor(
+      private readonly bookingRepository: BookingRepository,
+      private readonly userRepository: UserRepository,
+      private readonly notificationServiceFactory: NotificationServiceFactory
+     ) {
+      this.notificationService = this.notificationServiceFactory.createNotificationService('email');
+     }
   
-  async book(bookingReq: BookingRequest): Promise<Booking> {
-    if (typeof bookingReq.slot.date === 'string') {
-      bookingReq.slot.date = new Date(bookingReq.slot.date);
+  async book(bookingReq: BookingRequest): Promise<Booking | ResponseError> {
+    try {
+      if (typeof bookingReq.slot.date === 'string') {
+        bookingReq.slot.date = new Date(bookingReq.slot.date);
+      }
+      const booking = await this.bookingRepository.getBookingByDateAndHour(bookingReq.slot.date, bookingReq.slot.hour);
+      await this.validateBookingReq(bookingReq, booking);
+      if (booking) {
+          booking.users.push(bookingReq.userId);
+          if (booking.users.length === 4) {
+              booking.confirmed = true;
+              this.sendNotification(booking);
+          }
+          await this.bookingRepository.updateBooking(booking.id, booking);
+          return booking
+      }
+  
+      const newBooking = await this.bookingRepository.createBooking({
+          slot: bookingReq.slot,
+          confirmed: false,
+          users: [bookingReq.userId]
+      })
+  
+      return newBooking;
+    } catch(error) {
+      return { errorMessage: error.message }
     }
-    const booking = await this.bookingRepository.getBookingByDateAndHour(bookingReq.slot.date, bookingReq.slot.hour);
-    await this.validateBookingReq(bookingReq, booking);
-    if (booking) {
-        booking.users.push(bookingReq.userId);
-        if (booking.users.length === 4) {
-            booking.confirmed = true;
-            this.sendNotification(booking);
-        }
-        await this.bookingRepository.updateBooking(booking.id, booking);
-        return booking
-    }
-
-    const newBooking = await this.bookingRepository.createBooking({
-        slot: bookingReq.slot,
-        confirmed: false,
-        users: [bookingReq.userId]
-    })
-
-    return newBooking;
   }
 
   private async validateBookingReq(bookingReq: BookingRequest, booking: Booking) {
@@ -40,7 +58,7 @@ export class BookingService {
         throw new Error('You are booking out of hours');
     }
 
-    if (isValidDate(bookingReq.slot.date, [])) {
+    if (!isValidDate(bookingReq.slot.date)) {
       throw new Error(`No availability for this date: ${bookingReq.slot}`)
     }
 
@@ -60,6 +78,9 @@ export class BookingService {
   }
 
   private async sendNotification(booking: Booking) {
-    // TODO: send notification
+    for (const userId of booking.users) {
+      const user = await this.userRepository.findById(userId);
+      this.notificationService.send(user.email, `Your booking for the day ${getFormattedDate(booking.slot.date)} at ${convertHourFormat(booking.slot.hour)} is confirmed`);
+    }
   }
 }

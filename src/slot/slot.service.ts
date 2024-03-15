@@ -3,20 +3,26 @@ import { Slot } from '../models/slot.model';
 import { BookingRepository } from '../repositories/mocks/booking.repository';
 import { AvailableSlotsResponse } from '../models/available-slots.response.model';
 import { isValidDate } from '../utils/isValidDate';
+import { ResponseError } from '../models/response-error.model';
 
 @Injectable()
 export class SlotService {
     constructor(private readonly bookingRepository: BookingRepository) {}
 
     async getAvailableSlotsByDate(date: string): Promise<AvailableSlotsResponse> {
-        let selectedDate: Date = new Date();
-        if (date !== '') {
-            selectedDate = new Date(date);
+        try {
+            let selectedDate: Date = new Date();
+            if (date !== '') {
+                selectedDate = new Date(date);
+            }
+            this.checkDate(selectedDate);
+            const slots = this.generateSlotsByDate(selectedDate);
+            const availableSlots = await this.filterAvailableSlot(slots);
+            return { date: selectedDate, availableHours: availableSlots.map( slot => slot.hour) };
+        } catch (error) {
+            return { date: new Date(date), availableHours: [] }
         }
-        this.checkDate(selectedDate);
-        const slots = this.generateSlotsByDate(selectedDate);
-        const availableSlots = await this.filterAvailableSlot(slots);
-        return { date: selectedDate, availableHours: availableSlots.map( slot => slot.hour) };
+        
     }
 
     private generateSlotsByDate(date: Date): Slot[] {
@@ -42,7 +48,7 @@ export class SlotService {
     }
 
     private checkDate(date: Date) {
-        if (isValidDate(date, [])) {
+        if (!isValidDate(date)) {
             throw new Error(`No availability for this date: ${date}`)
         }
     }

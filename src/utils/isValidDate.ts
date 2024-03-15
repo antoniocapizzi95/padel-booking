@@ -1,14 +1,11 @@
 import { isDatePassed } from "./isDatePassed";
 import { isToday } from "./isToday";
 
-export function isValidDate(date: Date, closedDays: Date[]): boolean {
+export function isValidDate(date: Date): boolean {
     if (isDatePassed(date) || isToday(date)) {
         return false;
     }
-    for (const day of closedDays) {
-        if (date.getTime() === day.getTime()) {
-            return false
-        }
-    }
-    return true;
+
+    const closedDays = process.env.CLOSED_DAYS.split(",").map(item => new Date(item.trim()));
+    return closedDays.every(day => date.getTime() !== day.getTime());
 }

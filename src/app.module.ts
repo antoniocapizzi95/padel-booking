@@ -3,9 +3,16 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BookingModule } from './booking/booking.module';
 import { SlotModule } from './slot/slot.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [BookingModule, SlotModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }), 
+    BookingModule,
+    SlotModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
