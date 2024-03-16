@@ -1,0 +1,7 @@
+version: '3'
+services:
+  padel-booking-api:
+    container_name: padel-booking-api
+    build: .
+    ports:
+      - "3000:3000"
