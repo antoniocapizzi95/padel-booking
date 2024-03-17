@@ -1,0 +1,105 @@
+{
+	"info": {
+		"_postman_id": "c8a67867-213c-42a6-b92a-e1959a13a911",
+		"name": "padel-booking",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9669684",
+		"_collection_link": "https://red-flare-7491.postman.co/workspace/personal~42e9541e-707a-40fb-bab7-19602c374b8c/collection/9669684-c8a67867-213c-42a6-b92a-e1959a13a911?action=share&source=collection_link&creator=9669684"
+	},
+	"item": [
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"user1\",\r\n    \"password\": \"password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get slots by day",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ1c2VyMSIsImVtYWlsIjoidXNlcjFAZW1haWwuY29tIiwiaWF0IjoxNzEwNTI2ODMwLCJleHAiOjE3MTA1MzA0MzB9.KcVzdlhz3K2dyFNDr4ABJl1Fg53pWY8dKktW7v2FPzM",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/slot?date=2024-03-19",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"slot"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "2024-03-19"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "book",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJ1c2VyNCIsImVtYWlsIjoidXNlcjRAZW1haWwuY29tIiwiaWF0IjoxNzEwNjkzMzkwLCJleHAiOjE3MTA2OTY5OTB9.pEKM_sNPrpTglKGtHpD_ohns8Tr8yG42poV0i9Wz410",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"slot\": {\r\n        \"date\": \"2024-03-19\",\r\n        \"hour\": 19\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/booking",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"booking"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

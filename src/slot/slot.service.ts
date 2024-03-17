@@ -11,7 +11,8 @@ export class SlotService {
     async getAvailableSlotsByDate(date: string): Promise<AvailableSlotsResponse> {
         try {
             let selectedDate: Date = new Date();
-            if (date !== '') {
+            selectedDate.setDate(selectedDate.getDate() + 1 ); // set tomorrow by default
+            if (date && date !== '') {
                 selectedDate = new Date(date);
             }
             this.checkDate(selectedDate);
