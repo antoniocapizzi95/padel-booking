@@ -62,7 +62,7 @@ export class BookingService {
     }
 
     if (!isValidDate(bookingReq.slot.date)) {
-      throw new Error(`No availability for this date: ${bookingReq.slot}`)
+      throw new Error(`No availability for this date: ${getFormattedDate(bookingReq.slot.date)}`)
     }
 
     if (booking && booking.confirmed) {

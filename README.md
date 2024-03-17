@@ -32,6 +32,14 @@ The project will start on the default port 3000.
 
 In the repository's root folder, you will find a "postman" directory that contains a Postman collection. This collection allows you to test the project locally.
 
+## Testing
+
+Some unit tests have been developed for methods with logic.
+
+To run automated tests (developer with Jest), use the following command:
+
+    npm run test
+
 ## Endpoints
 
 - **POST /auth/login**: Returns a JWT token to be used in the Authorization header for other endpoints. 
@@ -50,13 +58,13 @@ In the repository's root folder, you will find a "postman" directory that contai
     ```
   - **Mocked Users**: `user1`, `user2`, `user3`, `user4` (Any string can be passed as a password, the authentication is only for demonstration purposes).
 
-- **GET /slot**: Retrieves available slots for a specified date. If no date is provided, the default is set to tomorrow's date.
+- **GET /slot**: Retrieves available slots for a specified date. If no date is provided, the default is set to tomorrow's date (Require authentication token in the header).
 
 The selected date must be passed as parameter, for example 
     
     GET http://localhost:3000/slot?date=2024-03-19
 
-- **POST /booking**: Books a slot.
+- **POST /booking**: Books a slot (Require authentication token in the header).
   - **Request Body**: 
     ```json
     {
