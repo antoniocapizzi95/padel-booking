@@ -48,13 +48,13 @@ In the repository's root folder, you will find a "postman" directory that contai
         "token": "jwt token"
     }
     ```
-  - **Mock Users**: `user1`, `user2`, `user3`, `user4` (Any string can be passed as a password for demonstration purposes).
+  - **Mocked Users**: `user1`, `user2`, `user3`, `user4` (Any string can be passed as a password, the authentication is only for demonstration purposes).
 
 - **GET /slot**: Retrieves available slots for a specified date. If no date is provided, the default is set to tomorrow's date.
 
 The selected date must be passed as parameter, for example 
     
-    **GET http://localhost:3000/slot?date=2024-03-19**
+    GET http://localhost:3000/slot?date=2024-03-19
 
 - **POST /booking**: Books a slot.
   - **Request Body**: 
@@ -82,4 +82,4 @@ The selected date must be passed as parameter, for example
 
 ## Closed Days
 
-Use the `.env` file to pass a list of closed days (format: `YYYY-MM-DD`) via the `CLOSED_DAYS` variable. Slots will not be available on these days.
+Use the `.env` file to pass a list (separated by comma) of closed days (format: `YYYY-MM-DD`) via the `CLOSED_DAYS` variable. Slots will not be available on these days.
