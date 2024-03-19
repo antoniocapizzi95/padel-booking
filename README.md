@@ -1,11 +1,12 @@
 # Padel-Booking
 
-Padel-Booking is a Node.js application developed using the NestJS framework and Typescript, designed to simplify the booking process for a single padel court. Utilizing a user-friendly interface, the application generates hourly slots from 9 AM to 10 PM (due to the court closing at 11 PM) starting from the day after the current date. Users can reserve a slot to play padel after logging in. A booking is confirmed once at least 4 users have reserved the same slot. Upon confirmation, the slot becomes unavailable for further bookings, and a mock email is sent (simulated by a log in the application console) to the users confirming the reservation.
+Padel-Booking is a Node.js application developed using the NestJS framework and Typescript, designed to simplify the booking process for a single padel court. The application generates hourly slots from 9 AM to 10 PM (due to the court closing at 11 PM) starting from the day after the current date. Users can reserve a slot to play padel after logging in. A booking is confirmed once at least 4 users have reserved the same slot. Upon confirmation, the slot becomes unavailable for further bookings, and a mock email is sent (simulated by a log in the application console) to the users confirming the reservation.
 
 ## Features
 
 - **No Database Required**: Data is mocked in memory for simplicity, and bookings are temporarily stored in a JSON file.
 - **Mock Email Notifications**: Instead of sending actual emails, the application logs the notification for confirmation.
+- **Injection**: The application is designed to allow simple dependency injection instead of mocked dependencies (if you want to add calls to a real database in the future, you can do so without changing the logic, the same for e-mail sending).
 - **Containerization with Docker**: The application is containerized, making it easy to test locally.
 - **AWS ECS Deployment**: Files are provided for deploying the application on AWS ECS.
 - **Automated Release Workflow**: A GitHub Actions workflow is set up for automating releases.
